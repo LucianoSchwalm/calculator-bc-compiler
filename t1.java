@@ -1,6 +1,6 @@
 import java.io.*;
 
-public class AsdrSample {
+public class t1 {
 
   private static final int BASE_TOKEN_NUM = 301;
   
@@ -29,43 +29,56 @@ public class AsdrSample {
 
   
   /* construtor da classe */
-  public AsdrSample (Reader r) {
+  public t1 (Reader r) {
       lexer = new Yylex (r, this);
   }
 
-  /***** Gramática original 
-  Prog -->  Bloco
+/*  GRAMÁTICA
+ Prog -> listaFunc
 
-  Bloco --> { Cmd }
+ListaFunc -> FUNC ListaFunc 
+	   | vazio
 
-  Cmd --> Bloco
-      | while ( E ) Cmd
-      | ident = E ;
-      | if ( E ) Cmd fi
-      | if ( E ) Cmd else Cmd fi
+FUNC -> define ident ( PARAMS ) BLOCO
 
-  E --> IDENT
-   | NUM
-   | ( E )
-***/  
+PARAMS -> ident ListaIdent
+	| vazio
+		
+ListaIdent -> , ident ListaIdent
+	    | vazio
+			
+BLOCO -> { CMD }
 
-  /***** Gramática 'fatorada' 
-  Prog -->  Bloco
+CMD -> 	  ATRIBUICAO CMD
+	| if ( CONDICAO ) CMD
+	| for ( ATRIBUICAO ; CONDICAO ; ident plusplus ) CMD
+	| return EXP CMD
+	| print PARAMETROPRINT CMD
+	| BLOCO CMD
+	| vazio
+	
+ATRIBUICAO -> indent attribution EXP
+	
+CONDICAO -> EXP RESTO1
 
-  Bloco --> { Cmd }
+RESTO1 -> menorigual EXP
+	| equals EXP
+	
+EXP -> ( EXP op EXP )
+	| VALUE
+		
+VALUE -> number
+	|ident RESTO2
+		
+RESTO2 -> ( EXP )
+	| vazio
 
-  Cmd --> Bloco
-      | while ( E ) Cmd
-      | ident = E ;
-      | if ( E ) Cmd RestoIf   // 'fatorada à esquerda'
-      
-   RestoIf --> fi
-            | else Cmd fi
+PARAMETROPRINT -> EXP RESTO3 
+		| string RESTO3
 
-  E --> IDENT
-   | NUM
-   | ( E )
-***/ 
+RESTO3 -> , PARAMETROPRINT
+	| vazio
+ */
 
   private void Prog() {
    
@@ -210,12 +223,12 @@ public class AsdrSample {
    *               the scanner on.
    */
   public static void main(String[] args) {
-     AsdrSample parser = null;
+     t1 parser = null;
      try {
          if (args.length == 0)
-            parser = new AsdrSample(new InputStreamReader(System.in));
+            parser = new t1(new InputStreamReader(System.in));
          else 
-            parser = new  AsdrSample( new java.io.FileReader(args[0]));
+            parser = new  t1( new java.io.FileReader(args[0]));
 
           parser.setDebug(false);
           laToken = parser.yylex();          

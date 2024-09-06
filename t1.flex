@@ -1,9 +1,9 @@
 %%
 
 %{
-  private AsdrSample yyparser;
+  private Trabalho1 yyparser;
 
-  public Yylex(java.io.Reader r, AsdrSample yyparser) {
+  public Yylex(java.io.Reader r, Trabalho1 yyparser) {
     this(r);
     this.yyparser = yyparser;
   }
@@ -23,14 +23,14 @@ LineTerminator = \r|\n|\r\n
 "$TRACE_ON"                  { yyparser.setDebug(true); }
 "$TRACE_OFF"                 { yyparser.setDebug(false); }
 
-"define"  	                 {return AsdrSample.DEFINE;}
-"return" 	                   {return AsdrSample.RETURN;}
-"print"                      {return AsdrSample.PRINT;}
-"if"		                     { return AsdrSample.IF; }
+"define"  	                 {return Trabalho1.DEFINE;}
+"return" 	                   {return Trabalho1.RETURN;}
+"print"                      {return Trabalho1.PRINT;}
+"if"		                     { return Trabalho1.IF; }
 
-[:jletter:][:jletterdigit:]* { return AsdrSample.IDENT; }  
+[:jletter:][:jletterdigit:]* { return Trabalho1.IDENT; }  
 
-[0-9]+ 	                     { return AsdrSample.NUMBER; }
+[0-9]+ 	                     { return Trabalho1.NUMBER; }
 
 ";" |
 "{" |
@@ -38,13 +38,13 @@ LineTerminator = \r|\n|\r\n
 "," |
 "(" |
 ")"                       	  { return yytext().charAt(0); } 
-"=="                          {return AsdrSample.EQUALS;}
-"="                           {return AsdrSample.ATTRIBUTION;}
-"<="                          {return AsdrSample.MENORIGUAL;}
+"=="                          {return Trabalho1.EQUALS;}
+"="                           {return Trabalho1.ATTRIBUTION;}
+"<="                          {return Trabalho1.MENORIGUAL;}
 "+"|
 "-"|
 "*"|
-"/"                           {return AsdrSample.OP;}
+"/"                           {return Trabalho1.OP;}
 
 
 {WHITE_SPACE_CHAR}+           { }

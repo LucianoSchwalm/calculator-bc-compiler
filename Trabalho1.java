@@ -1,23 +1,32 @@
 import java.io.*;
 
-public class t1 {
+public class Trabalho1 {
 
   private static final int BASE_TOKEN_NUM = 301;
   
-  public static final int IDENT  = 301;
-  public static final int NUM 	 = 302;
-  public static final int WHILE  = 303;
-  public static final int IF	 = 304;
-  public static final int FI	 = 305;
-  public static final int ELSE = 306;
-
+  public static final int IDENT        = 301;
+  public static final int NUMBER 	   = 302;
+  public static final int ATTRIBUTION  = 303;
+  public static final int IF	         = 304;
+  public static final int MENORIGUAL	= 305;
+  public static final int EQUALS       = 306;
+  public static final int PRINT        = 307;
+  public static final int DEFINE       = 308;
+  public static final int RETURN       = 309;
+  public static final int OP           = 310;
+  
+  
     public static final String tokenList[] = 
       {"IDENT",
-		 "NUM", 
-		 "WHILE", 
+		 "NUMBER", 
+		 "ATTRIBUTION", 
 		 "IF", 
-		 "FI",
-		 "ELSE"  };
+		 "MENORIGUAL",
+		 "EQUALS",
+       "PRINT",
+       "DEFINE",
+       "RETURN",
+       "OP"  };
                                       
   /* referencia ao objeto Scanner gerado pelo JFLEX */
   private Yylex lexer;
@@ -29,7 +38,7 @@ public class t1 {
 
   
   /* construtor da classe */
-  public t1 (Reader r) {
+  public Trabalho1 (Reader r) {
       lexer = new Yylex (r, this);
   }
 
@@ -223,12 +232,12 @@ RESTO3 -> , PARAMETROPRINT
    *               the scanner on.
    */
   public static void main(String[] args) {
-     t1 parser = null;
+     Trabalho1 parser = null;
      try {
          if (args.length == 0)
-            parser = new t1(new InputStreamReader(System.in));
+            parser = new Trabalho1(new InputStreamReader(System.in));
          else 
-            parser = new  t1( new java.io.FileReader(args[0]));
+            parser = new  Trabalho1( new java.io.FileReader(args[0]));
 
           parser.setDebug(false);
           laToken = parser.yylex();          

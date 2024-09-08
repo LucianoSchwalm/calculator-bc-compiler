@@ -1,5 +1,9 @@
 %%
-
+/*
+Nomes: Enzo Martins e Luciano Schwalm
+Matriculas: 21200756 e 20106983
+Emails: enzo.martins@edu.pucrs.br e luciano.schwalm@edu.pucrs.br
+*/
 %{
   private Trabalho1 yyparser;
 
@@ -27,6 +31,7 @@ LineTerminator = \r|\n|\r\n
 "return" 	                   {return Trabalho1.RETURN;}
 "print"                      {return Trabalho1.PRINT;}
 "if"		                     { return Trabalho1.IF; }
+"for"		                     { return Trabalho1.FOR; }
 
 [:jletter:][:jletterdigit:]* { return Trabalho1.IDENT; }  
 
@@ -41,6 +46,7 @@ LineTerminator = \r|\n|\r\n
 "=="                          {return Trabalho1.EQUALS;}
 "="                           {return Trabalho1.ATTRIBUTION;}
 "<="                          {return Trabalho1.MENORIGUAL;}
+"++"                          {return Trabalho1.PLUSPLUS;}
 "+"|
 "-"|
 "*"|

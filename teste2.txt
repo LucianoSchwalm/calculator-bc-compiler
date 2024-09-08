@@ -1,0 +1,19 @@
+define diminui(a,b) { return (a-b) }
+define verificaIgualAUm(n) {
+ res = 1
+ if (n==1)
+    return 1
+ for (i=1;i<=n;i++)
+    res = (res*i)
+    print res
+ return (n*verificaIgualAUm((n-1)))
+}
+define verificaIgualADois(n) {
+ res = 1
+ for (i=1;i<=n;i++)
+    res = (res*i)
+    print res
+ if (n==2)
+    return 2
+ return res
+}

@@ -1,5 +1,7 @@
 import java.io.*;
-
+//Nomes: Enzo Martins e Luciano Schwalm
+//Matriculas: 21200756 e 20106983
+//Emails: enzo.martins@edu.pucrs.br e luciano.schwalm@edu.pucrs.br
 public class Trabalho1 {
 
   private static final int BASE_TOKEN_NUM = 301;
@@ -14,6 +16,8 @@ public class Trabalho1 {
   public static final int DEFINE       = 308;
   public static final int RETURN       = 309;
   public static final int OP           = 310;
+  public static final int FOR	         = 311;
+  public static final int PLUSPLUS	   = 312;
   
   
     public static final String tokenList[] = 
@@ -26,7 +30,10 @@ public class Trabalho1 {
        "PRINT",
        "DEFINE",
        "RETURN",
-       "OP"  };
+       "OP",  
+       "FOR",
+       "PLUSPLUS"
+      };
                                       
   /* referencia ao objeto Scanner gerado pelo JFLEX */
   private Yylex lexer;
@@ -42,7 +49,7 @@ public class Trabalho1 {
       lexer = new Yylex (r, this);
   }
 
-/*  GRAMÁTICA
+/*  GRAMATICA
  Prog -> listaFunc
 
 ListaFunc -> FUNC ListaFunc 
@@ -68,130 +75,198 @@ CMD -> 	  ATRIBUICAO CMD
 	
 ATRIBUICAO -> indent attribution EXP
 	
-CONDICAO -> EXP RESTO1
+CONDICAO -> EXP RESTOCONDICAO
 
-RESTO1 -> menorigual EXP
+RESTOCONDICAO -> menorigual EXP
 	| equals EXP
 	
 EXP -> ( EXP op EXP )
 	| VALUE
 		
 VALUE -> number
-	|ident RESTO2
+	|ident RESTOVALUE
 		
-RESTO2 -> ( EXP )
+RESTOVALUE -> ( EXP )
 	| vazio
 
-PARAMETROPRINT -> EXP RESTO3 
-		| string RESTO3
+PARAMETROPRINT -> EXP RESTOPARAMETROPRINT
 
-RESTO3 -> , PARAMETROPRINT
+RESTOPARAMETROPRINT -> , PARAMETROPRINT
 	| vazio
  */
 
-  private void Prog() {
-   
-      if (laToken == '{') {
-         if (debug) System.out.println("Prog --> Bloco");
-         Bloco();
-      }
-      else 
-        yyerror("esperado '{'");
+   private void Prog() {
+      ListaFunc();
    }
 
-  private void Bloco() {
-      if (debug) System.out.println("Bloco --> { Cmd }");
-      //if (laToken == '{') {
-         verifica('{');
-         Cmd();
-         verifica('}');
-      //}
-  }
+   private void ListaFunc(){
+      if(laToken == DEFINE){
+         System.out.println();
+         Func();
+         ListaFunc();
+      }
+   }
 
-  private void Cmd() {
-      if (laToken == '{') {
-         if (debug) System.out.println("Cmd --> Bloco");
-         Bloco();
-	   }    
-      else if (laToken == WHILE) {
-         if (debug) System.out.println("Cmd --> WHILE ( E ) Cmd");
-         verifica(WHILE);    // laToken = this.yylex(); 
-  		   verifica('(');
-  		   E();
-         verifica(')');
+   private void Func(){
+      verifica(DEFINE);
+      verifica(IDENT);
+      verifica('(');
+      Params();
+      verifica(')');
+      Bloco();
+   }
+
+   private void Params(){
+      if(laToken == IDENT){
+         verifica(IDENT);
+         ListaIdent();
+      }
+   }
+
+   private void ListaIdent(){
+      if(laToken == ','){
+         verifica(',');
+         verifica(IDENT);
+         ListaIdent();
+      }
+   }
+
+   private void Bloco(){
+      verifica('{');
+      Cmd();
+      verifica('}');
+   }
+
+   private void Cmd(){
+      if(laToken == IDENT){
+         Atribuicao();
          Cmd();
-	   }
-      else if (laToken == IDENT ) {
-         if (debug) System.out.println("Cmd --> IDENT = E ;");
-            verifica(IDENT);  
-            verifica('='); 
-            E();
-		      verifica(';');
-	   }
-    else if (laToken == IF) {
-         if (debug) System.out.println("Cmd --> if (E) Cmd RestoIF");
+      }
+      else if(laToken == IF){
          verifica(IF);
          verifica('(');
-  		   E();
+         Condicao();
          verifica(')');
          Cmd();
-         RestoIF();
-	   }
- 	else yyerror("Esperado {, if, while ou identificador");
+      }
+      else if(laToken == FOR){
+         verifica(FOR);
+         verifica('(');
+         Atribuicao();
+         verifica(';');
+         Condicao();
+         verifica(';');
+         verifica(IDENT);
+         verifica(PLUSPLUS);
+         verifica(')');
+         Cmd();
+      }
+      else if(laToken == RETURN){
+         verifica(RETURN);
+         Exp();
+         Cmd();
+      }
+      else if(laToken == PRINT){
+         verifica(PRINT);
+         ParametroPrint();
+         Cmd();
+      }
+      else if(laToken == '{'){
+         Bloco();
+         Cmd();
+      }
    }
 
+   private void Atribuicao(){
+      verifica(IDENT);
+      verifica(ATTRIBUTION);
+      Exp();
+   }
 
-   private void RestoIF() {
-       if (laToken == ELSE) {
-         if (debug) System.out.println("RestoIF --> else Cmd FI ");
-         verifica(ELSE);
-         Cmd();
-         verifica(FI);
-    
-	   } else if (laToken == FI){
-         if (debug) System.out.println("RestoIF -->  FI  ");
-         verifica(FI); 
-         }
-      else yyerror("Esperado else ou fi");
-     }     
+   private void Condicao(){
+      Exp();
+      RestoCondicao();
+   }
 
+   private void RestoCondicao(){
+      if(laToken == MENORIGUAL) {
+         verifica(MENORIGUAL);
+         Exp();
+      }
+      else if(laToken == EQUALS){
+         verifica(EQUALS);
+         Exp();
+      }
+      else yyerror("Esperado <= ou ==");
+   }
 
-
-  private void E() {
-      if (laToken == IDENT) {
-         if (debug) System.out.println("E --> IDENT");
-         verifica(IDENT);
-	   }
-      else if (laToken == NUM) {
-         if (debug) System.out.println("E --> NUM");
-         verifica(NUM);
-	   }
-      else if (laToken == '(') {
-         if (debug) System.out.println("E --> ( E )");
+   private void Exp(){
+      if(laToken == '('){
          verifica('(');
-         E();        
-		 verifica(')');
-	   }
- 	else yyerror("Esperado operando (, identificador ou numero");
+         Exp();
+         verifica(OP);
+         Exp();
+         verifica(')');
+      }
+      else if (laToken == NUMBER || laToken == IDENT){
+         Value();
+      }
+      else yyerror("Esperado (, Numero ou Identificador");
+   }
+
+   private void Value(){
+      if(laToken == NUMBER){
+         verifica(NUMBER);
+      }
+      else if (laToken == IDENT){
+         verifica(IDENT);
+         RestoValue();
+      }
+      else yyerror("Esperado Numero ou Identificador");
+   }
+
+   private void RestoValue(){
+      if(laToken == '(') {
+         verifica('(');
+         Exp();
+         verifica(')');
+      }
+   }
+
+   private void ParametroPrint(){
+      Exp();
+      RestoParametroPrint();
+   }
+
+   private void RestoParametroPrint(){
+      if(laToken == ',') {
+         verifica(',');
+         ParametroPrint();
+      }
    }
 
 
   private void verifica(int expected) {
-      if (laToken == expected)
-         laToken = this.yylex();
-      else {
-         String expStr, laStr;       
-
-		expStr = ((expected < BASE_TOKEN_NUM )
+     String expStr, laStr;       
+      if (laToken == expected){
+         expStr = ((expected < BASE_TOKEN_NUM )
                 ? ""+(char)expected
 			     : tokenList[expected-BASE_TOKEN_NUM]);
-         
-		laStr = ((laToken < BASE_TOKEN_NUM )
-                ? Character.toString(laToken)
-                : tokenList[laToken-BASE_TOKEN_NUM]);
+         System.out.print(expStr + " ");
+         laToken = this.yylex();
+      }
+      else {
 
-          yyerror( "esperado token: " + expStr +
-                   " na entrada: " + laStr);
+         expStr = ((expected < BASE_TOKEN_NUM )
+                  ? ""+(char)expected
+               : tokenList[expected-BASE_TOKEN_NUM]);
+            
+         laStr = ((laToken < BASE_TOKEN_NUM )
+                  ? Character.toString(laToken)
+                  : tokenList[laToken-BASE_TOKEN_NUM]);
+
+            yyerror( "esperava token: " + expStr +
+                     " e recebeu: " + laStr);
      }
    }
 
